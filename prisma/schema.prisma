@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator nexusPrisma {
+  provider = "nexus-prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CloudType {
+  Http
+  // OneDrive
+  // GoogleDrive
+  // Dropbox
+  WebShare
+  TorrentMagnet
+}
+
+model CloudAccount {
+  id       Int       @id @default(autoincrement())
+  username String
+  password String
+  cloud    CloudType
+  label    String
+  File     File[]
+}
+
+enum FileState {
+  InQueue
+  Downloading
+  Downloaded
+  Deleted
+  Error
+}
+
+model File {
+  id            Int          @id @default(autoincrement())
+  url           String // cloud url of the file
+  title         String
+  thumbnailUrl  String
+  size          Int
+  path          String
+  state         FileState
+  downloadSpeed Int
+  progress      Int
+  metadata      Json
+  account       CloudAccount @relation(fields: [accountId], references: [id])
+  accountId     Int
+}

@@ -1,11 +1,5 @@
-import { ApolloServer } from "apollo-server-micro"
+import server from "../../graphql/server"
 import type { NextApiRequest, NextApiResponse } from "next"
-
-import schema from "../../schema"
-
-const server = new ApolloServer({
-  schema,
-})
 
 const handleCors = (next: (req: NextApiRequest, res: NextApiResponse) => any) => async (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader("Access-Control-Allow-Credentials", "true")
