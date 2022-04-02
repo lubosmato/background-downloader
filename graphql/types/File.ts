@@ -1,13 +1,16 @@
 
 import { enumType, objectType, extendType, scalarType, mutationField, nonNull, arg, inputObjectType } from "nexus"
 import * as prismaSchema from "nexus-prisma"
+import type { Cloud } from "nexus-prisma"
+import { CloudConnector, NotImplementedConnector } from "../../clouds"
+import { Webshare } from "../../clouds/webshare"
 
 export const JSONScalar = scalarType({
   name: "JSON",
   asNexusMethod: "json",
 })
 
-export const FileState = enumType({ ...prismaSchema.FileState })
+export const FileState = enumType(prismaSchema.FileState)
 
 export const File = objectType({
   name: prismaSchema.File.$name,
@@ -68,5 +71,35 @@ export const AddNewFile = mutationField("addNewFile", {
         title: "TODO",
       },
     })
+  },
+})
+
+type CloudType = Cloud["members"][number];
+type CloudConnectors = {
+  [key in CloudType]: CloudConnector
+}
+
+const clouds: CloudConnectors = {
+  Http: new NotImplementedConnector(),
+  TorrentMagnet: new NotImplementedConnector(),
+  WebShare: new Webshare(),
+}
+
+export const TestWebshare = mutationField("testWebshare", {
+  type: JSONScalar,
+  args: {},
+  resolve: async () => {
+    // NOTE PoC code here
+    const cloudType = "WebShare"
+    const cloud = clouds[cloudType]
+
+    if(!cloud) throw new Error(`Cloud ${cloudType} not found`)
+
+    await cloud.login("USER", "PASSS")
+
+    const files = await cloud.search("jumanji 2160p")
+    await cloud.startDownloading(files[0])
+
+    return files
   },
 })

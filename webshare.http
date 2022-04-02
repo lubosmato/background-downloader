@@ -1,0 +1,20 @@
+### Searching in webshare
+POST https://webshare.cz/api/search/
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+what=Filename&offset=0&limit=25&sort=largest&wst=
+
+### Login 1.
+POST https://webshare.cz/api/salt/
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+username_or_email=USERNAME&wst=
+
+### Login 2.
+POST https://webshare.cz/api/login/
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+username_or_email=PASSWORD
+&password=PASSWORD_HASH
+&keep_logged_in=1
+

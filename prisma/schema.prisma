@@ -24,12 +24,13 @@ enum Cloud {
 }
 
 model CloudAccount {
-  id       Int       @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   username String
   password String
   cloud    Cloud
   label    String
   active   Boolean @default(false)
+  metadata Json
   File     File[]
 }
 

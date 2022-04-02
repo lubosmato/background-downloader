@@ -11,6 +11,8 @@ export const CloudAccount = objectType({
     t.field(prismaSchema.CloudAccount.label)
     t.field(prismaSchema.CloudAccount.username)
     t.field(prismaSchema.CloudAccount.password)
+    t.field(prismaSchema.CloudAccount.active)
+    t.field(prismaSchema.CloudAccount.metadata.name, { type: "JSON" })
     t.field(prismaSchema.CloudAccount.cloud)
   },
 })

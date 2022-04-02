@@ -9,9 +9,11 @@ enum Cloud {
 }
 
 type CloudAccount {
+  active: Boolean!
   cloud: Cloud!
   id: Int!
   label: String!
+  metadata: JSON
   password: String!
   username: String!
 }
@@ -42,6 +44,7 @@ scalar JSON
 
 type Mutation {
   addNewFile(data: NewFileInput!): File
+  testWebshare: JSON
 }
 
 input NewFileInput {
