@@ -14,7 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum CloudType {
+enum Cloud {
   Http
   // OneDrive
   // GoogleDrive
@@ -27,8 +27,9 @@ model CloudAccount {
   id       Int       @id @default(autoincrement())
   username String
   password String
-  cloud    CloudType
+  cloud    Cloud
   label    String
+  active   Boolean @default(false)
   File     File[]
 }
 

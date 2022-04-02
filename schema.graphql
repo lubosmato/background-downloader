@@ -2,18 +2,18 @@
 ### Do not make changes to this file directly
 
 
+enum Cloud {
+  Http
+  TorrentMagnet
+  WebShare
+}
+
 type CloudAccount {
-  cloud: CloudType!
+  cloud: Cloud!
   id: Int!
   label: String!
   password: String!
   username: String!
-}
-
-enum CloudType {
-  Http
-  TorrentMagnet
-  WebShare
 }
 
 type File {
@@ -39,6 +39,16 @@ enum FileState {
 }
 
 scalar JSON
+
+type Mutation {
+  addNewFile(data: NewFileInput!): File
+}
+
+input NewFileInput {
+  accountId: Int!
+  metadata: JSON
+  url: String!
+}
 
 type Query {
   allAccounts: [CloudAccount!]!

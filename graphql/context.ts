@@ -6,7 +6,8 @@ export interface Context {
   prisma: PrismaClient;
 }
 
-export const context: ({ req }: { req: NextApiRequest }) => Promise<Context> =
-  async () => ({
+export function createContext({ req }: { req: NextApiRequest }): Context {
+  return {
     prisma: prismaClient,
-  })
+  }
+}
