@@ -3,16 +3,18 @@ import path from "path"
 
 let downloaderProcess: ChildProcess | null = null
 
+export function send(message: any) {
+  if (!downloaderProcess) run()
+
+  downloaderProcess.send(message)
+}
+
 export function run() {
   if (downloaderProcess) return
 
   downloaderProcess = fork(path.join(process.cwd(), ".next/server/downloader/worker.js"), [], { cwd: process.cwd() })
 
-  downloaderProcess.on("message", (message) => {
-    console.log(message)
-  })
-
-  downloaderProcess.send({
+  send({
     type: "start",
     data: {
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -23,5 +25,3 @@ export function run() {
     },
   })
 }
-
-run()

@@ -4,6 +4,7 @@ import * as prismaSchema from "nexus-prisma"
 import type { Cloud } from "@prisma/client"
 import { CloudConnector, NotImplementedConnector } from "../../clouds"
 import { Webshare } from "../../clouds/webshare"
+import { send } from "../../downloader"
 
 export const JSONScalar = scalarType({
   name: "JSON",
@@ -94,10 +95,10 @@ export const TestWebshare = mutationField("testWebshare", {
 
     if(!cloud) throw new Error(`Cloud ${cloudType} not found`)
 
-    await cloud.login("USER", "PASSS")
-
     const files = await cloud.search("jumanji 2160p")
     await cloud.startDownloading(files[0])
+
+    send("Hello there")
 
     return files
   },

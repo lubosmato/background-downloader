@@ -11,6 +11,8 @@ const nextConfig = {
 
     if (options.isServer) {
       // transpile downloader worker into a file that can be run as a process by the server
+      config.output.globalObject = "this"
+
       return merge(config, {
         entry () {
           return config.entry().then((entry) => {
