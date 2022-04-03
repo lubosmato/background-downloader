@@ -26,6 +26,7 @@
     "node-fetch": "^3.2.3",
     "react": "18.0.0",
     "react-dom": "18.0.0",
+    "webpack-merge": "^5.8.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {

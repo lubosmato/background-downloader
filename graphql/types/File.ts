@@ -1,7 +1,7 @@
 
 import { enumType, objectType, extendType, scalarType, mutationField, nonNull, arg, inputObjectType } from "nexus"
 import * as prismaSchema from "nexus-prisma"
-import type { Cloud } from "nexus-prisma"
+import type { Cloud } from "@prisma/client"
 import { CloudConnector, NotImplementedConnector } from "../../clouds"
 import { Webshare } from "../../clouds/webshare"
 
@@ -74,9 +74,8 @@ export const AddNewFile = mutationField("addNewFile", {
   },
 })
 
-type CloudType = Cloud["members"][number];
 type CloudConnectors = {
-  [key in CloudType]: CloudConnector
+  [key in Cloud]: CloudConnector
 }
 
 const clouds: CloudConnectors = {

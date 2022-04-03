@@ -1,7 +1,12 @@
-import { CloudConnector, CloudFile } from ".."
-import { hash } from "./helpers"
 import convert from "xml-js"
 import fetch from "node-fetch"
+import path from "path"
+
+import { CloudConnector, CloudFile, downloadPath } from ".."
+import { hash } from "./helpers"
+import type { File, CloudAccount } from "@prisma/client"
+import { FileState } from "@prisma/client"
+import prismaClient from "../../prisma/prismaClient"
 
 interface WebshareMetadata {
   wst: string
@@ -9,12 +14,16 @@ interface WebshareMetadata {
 
 export class Webshare implements CloudConnector {
   metadata: WebshareMetadata
+  account: CloudAccount | null
 
   constructor() {
     this.metadata = { wst: "" }
+    this.account = null
   }
 
-  async startDownloading(what: CloudFile): Promise<void> {
+  async startDownloading(what: CloudFile): Promise<File> {
+    await this.login()
+
     const data = await this.callApi("api/file_link/", {
       ident: what.id,
       password: "",
@@ -27,8 +36,21 @@ export class Webshare implements CloudConnector {
     if (data["response"]["status"]["_text"] !== "OK") throw new Error("Download failed")
 
     const link = data["response"]["link"]["_text"]
-    console.log("file link is:", link)
-    // TODO continue here
+
+    return await prismaClient.file.create({
+      data: {
+        url: what.url,
+        title: what.name,
+        thumbnailUrl: what.thumbUrl,
+        size: what.size,
+        path: path.join(downloadPath, what.name),
+        state: FileState.InQueue,
+        downloadSpeed: 0,
+        progress: 0,
+        metadata: { downloadLink: link, wgetPid: 1234 }, // TODO start actual downloading
+        accountId: this.account.id,
+      },
+    })
   }
 
   async search(what: string): Promise<CloudFile[]> {
@@ -46,14 +68,14 @@ export class Webshare implements CloudConnector {
     }))
   }
 
-  async login(username: string, password: string): Promise<void> {
+  private async login(): Promise<void> {
     if (await this.checkLogin()) return
 
-    const salt = await this.getSalt(username)
+    const salt = await this.getSalt(this.account.username)
     this.metadata.wst = this.randomString(16)
-    const passwordHash = hash(password, salt)
+    const passwordHash = hash(this.account.password, salt)
 
-    await this.callLogin(username, passwordHash)
+    await this.callLogin(this.account.username, passwordHash)
   }
 
   private randomString(length: number) {
@@ -86,6 +108,15 @@ export class Webshare implements CloudConnector {
   }
 
   private async checkLogin(): Promise<boolean> {
+    if (!this.account) {
+      this.account = await prismaClient.cloudAccount.findFirst({
+        where: {
+          active: true,
+          cloud: "WebShare",
+        },
+      })
+    }
+
     if (!this.metadata.wst) return false
 
     try {
