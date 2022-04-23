@@ -1,6 +1,4 @@
-console.log("worker starting")
-
-// TODO it throws error
+// TODO import causes error: Native Node.js APIs are not supported in the Edge Runtime. Found `fs` imported.
 import prismaClient from "../prisma/prismaClient"
 
 process.on("message", async (message) => {
